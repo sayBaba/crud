@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.4.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 开启注解-->
+    <context:component-scan base-package="com.hz.crud.service"></context:component-scan>
+
+    <context:property-placeholder location="classpath:config/db.properties"></context:property-placeholder>
+
+    <!-- 数据源-->
+    <bean name="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="jdbcUrl" value="${jdbc.url}"></property>
+        <property name="driverClass" value="${jdbc.driver}"></property>
+        <property name="user" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+
+    <!--mybatis注入 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 加载 MyBatis 的配置文件 -->
+        <property name="configLocation" value="classpath:mybatis/sqlMapperConfig.xml"/>
+        <!-- 数据源 -->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="com.hz.crud.dao"/>
+    </bean>
+
+    <!-- 事务管理 -->
+    <bean name="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+
+    <!-- 配置RabbitMQ连接 -->
+    <!-- channel-cache-size，channel的缓存数量，默认值为25 -->
+    <!-- cache-mode，缓存连接模式，默认值为CHANNEL(单个connection连接，连接之后关闭，自动销毁) -->
+    <rabbit:connection-factory id="connectionFactory" host="${rmq.host}" port="${rmq.port}"
+                               username="${rmq.user}" password="${rmq.password}" virtual-host="${rmq.virtual}" channel-cache-size="${rmq.channelCacheSize}" cache-mode="CHANNEL"/>
+    <rabbit:admin connection-factory="connectionFactory"/>
+
+    <!--
+     定义消息队列
+     durable:是否持久化，如果想在RabbitMQ退出或崩溃的时候，不失去queue和消息，需要同时标志队列(queue)
+     和交换机(exchange)持久化，即rabbit:queue标签和rabbit:direct-exchange中的durable=true,而消息(message)
+     默认是持久化的，可以看类org.springframework.amqp.core.MessageProperties中的属性
+     public static final MessageDeliveryMode DEFAULT_DELIVERY_MODE = MessageDeliveryMode.PERSISTENT;
+     auto_delete: 当所有消费客户端连接断开后，是否自动删除队列
+     exclusive: 仅创建者可以使用的私有队列，断开后自动删除；
+ -->
+    <rabbit:queue id="emailqueue" name="SpringRabbit-Email-Queue" durable="true" auto-delete="false" exclusive="false"/>
+
+    <!--
+    绑定队列
+    rabbitmq的exchangeType常用的三种模式：direct，fanout，topic三种,此处为direct模式，即rabbit:direct-exchange标签，
+    Direct交换器很简单，如果是Direct类型，就会将消息中的RoutingKey与该Exchange关联的所有Binding中的BindingKey进行比较，如果相等，
+    则发送到该Binding对应的Queue中。有一个需要注意的地方：如果找不到指定的exchange，就会报错。
+    但routing key找不到的话，不会报错，这条消息会直接丢失，所以此处要小心,
+    auto-delete:自动删除，如果为Yes，则该交换机所有队列queue删除后，自动删除交换机，默认为false
+-->
+    <rabbit:direct-exchange name="SpringRabbit-Email-Exchange" durable="true" auto-declare="true" auto-delete="false">
+        <rabbit:bindings>
+            <rabbit:binding queue="emailqueue" key="info"></rabbit:binding>
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
+    <!-- spring template声明 -->
+    <rabbit:template id="rabbitTemplate" connection-factory="connectionFactory" exchange="SpringRabbit-Email-Exchange"></rabbit:template>
+
+    <!-- 配置消费者-->
+     <bean id="consumer" class="com.hz.crud.service.SendEmailConsumer"/>
+
+    <rabbit:listener-container connection-factory="connectionFactory" acknowledge="manual">
+         <rabbit:listener queues="emailqueue" ref="consumer" />
+    </rabbit:listener-container>
+
+
+</beans>

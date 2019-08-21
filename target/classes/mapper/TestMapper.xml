@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- mapper:根标签，namespace：命名空间，随便写，一般保证命名空间唯一 -->
+<mapper namespace="com.hz.crud.dao.TestMapper">
+
+    <select id="queryLike" resultType="com.hz.crud.model.UserBean">
+        SELECT USER_ID AS userId,
+                LOGIN_NAME AS loginName,
+                LOGIN_PWD AS loginPwd,
+                USER_NAME AS userName,
+                STATUS AS STATUS,
+                EMAIL AS email,
+                ADDRESS AS address,
+                REMARK AS remark
+        FROM sys_user
+   <!--     <where>
+        <if test="${name}!=null">
+            and loginName = '%'#{name}'%'
+        </if>
+        </where>-->
+    </select>
+
+
+    <update id="updateUserInfo" parameterType="com.hz.crud.resp.UserResp">
+       update sys_user
+        <set>
+            <if test="loginName!=null">LOGIN_NAME=#{loginName},</if>
+            <if test="loginPwd!=null">LOGIN_PWD=#{loginPwd},</if>
+            <if test=" userName!=null">USER_NAME=#{userName},</if>
+            <if test=" STATUS!=null">STATUS=#{STATUS},</if>
+            <if test="email!=null">EMAIL=#{email},</if>
+            <if test="address!=null">ADDRESS=#{address},</if>
+            <if test="remark!=null">REMARK=#{remark},</if>
+        </set>
+        WHERE USER_ID=#{userId}
+    </update>
+
+
+
+
+</mapper>
