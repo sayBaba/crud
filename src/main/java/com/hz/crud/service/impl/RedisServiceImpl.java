@@ -24,7 +24,10 @@ public class RedisServiceImpl implements IRedisService {
         loger.info("key:{},value:{},添加redis",key,value);
         ShardedJedis shardedJedis = null;
         try {
+
             shardedJedis = shardedJedisPool.getResource();
+
+
             return shardedJedis.set(key, value);
         }finally {
             if (null != shardedJedis) {

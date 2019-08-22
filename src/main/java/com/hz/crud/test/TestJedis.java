@@ -39,7 +39,7 @@ public class TestJedis {
         UserBean userBean = null;
         for(int i=0;i<10;++i){
             userBean = new UserBean();
-            userBean.setUserName("王大鹏");
+            userBean.setUserName("xiuzhang");
             userBean.setAddress("如花姐");
             userBean.setEmail("历日李亚");
             userBean.setEmail("123456@qq.com");
@@ -47,9 +47,9 @@ public class TestJedis {
             userBeans.add(userBean);
             stringUserBeanHashMap.put("user"+i,userBean);
         }
-        String user = gson.toJson(userBean);
+//        String user = gson.toJson(userBean);
 
-        jedis.set("user",user);
+        jedis.set("user",);
         jedis.set("set",gson.toJson(userBeanHashSet));
         jedis.set("list",gson.toJson(userBeans));
         jedis.set("hashmap",gson.toJson(stringUserBeanHashMap));
