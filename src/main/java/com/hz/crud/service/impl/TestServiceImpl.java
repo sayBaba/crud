@@ -1,9 +1,11 @@
 package com.hz.crud.service.impl;
 
+import com.google.gson.Gson;
 import com.hz.crud.dao.TestMapper;
 import com.hz.crud.model.UserBean;
 import com.hz.crud.req.LoginReq;
 import com.hz.crud.resp.UserResp;
+import com.hz.crud.service.IRedisService;
 import com.hz.crud.service.ITestService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
@@ -22,6 +24,9 @@ public class TestServiceImpl implements ITestService {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private IRedisService iRedisService;
 
     @Override
     @Transactional
@@ -47,6 +52,7 @@ public class TestServiceImpl implements ITestService {
     public void login(LoginReq loginReq) {
         //调用dao的代码 //TODO
 
+        iRedisService.set("loginReq", new Gson().toJson(loginReq));
         //放入消息到mq,需要提前配置xml文件
         rabbitTemplate.convertAndSend("info",loginReq);
         System.out.println("----------end-----------");
