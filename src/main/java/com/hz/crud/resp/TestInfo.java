@@ -1,5 +1,7 @@
 package com.hz.crud.resp;
 
+import org.springframework.context.annotation.Scope;
+
 public class TestInfo {
 
     private String name;

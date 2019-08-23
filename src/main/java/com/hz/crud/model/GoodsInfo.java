@@ -1,11 +1,6 @@
-package com.hz.crud.vo;
+package com.hz.crud.model;
 
-import java.io.Serializable;
-
-/**
- * 购物车的商品
- */
-public class CartDto implements Serializable {
+public class GoodsInfo {
 
     private String goodsId;
     private String goodsName;
@@ -61,5 +56,6 @@ public class CartDto implements Serializable {
     public void setGoodsNum(String goodsNum) {
         this.goodsNum = goodsNum;
     }
+
 
 }

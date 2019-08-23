@@ -11,6 +11,9 @@
 
     <mappers>
         <mapper resource="mapper/TestMapper.xml"/>
+        <mapper resource="mapper/GoodsMapper.xml"/>
+
+
     </mappers>
 
 </configuration>

@@ -106,15 +106,17 @@
 
                 </bean>
 
-              <bean class="redis.clients.jedis.JedisShardInfo">
+<!--              <bean class="redis.clients.jedis.JedisShardInfo">
                     <constructor-arg index="0" value="192.168.1.170"/>
                     <constructor-arg index="1" value="6379"/>
                     <constructor-arg index="2" value="2000"/>
                     <constructor-arg index="3" value="0"/>
-                </bean>
+                </bean>-->
             </list>
         </constructor-arg>
     </bean>
+
+    <context:annotation-config></context:annotation-config>
 
 
 </beans>

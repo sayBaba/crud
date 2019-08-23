@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class TestServiceImpl implements ITestService {
@@ -51,10 +52,16 @@ public class TestServiceImpl implements ITestService {
     @Override
     public void login(LoginReq loginReq) {
         //调用dao的代码 //TODO
+        String key = "111*";
+        Set<String> stringSet = iRedisService.getKeysFromLocal(key);
+        System.err.println("===========stringSet=== ="+stringSet);
+        for(String s :stringSet){
+            System.err.println("============== ="+s);
+        }
 
-        iRedisService.set("loginReq", new Gson().toJson(loginReq));
+//        iRedisService.set("loginReq", new Gson().toJson(loginReq));
         //放入消息到mq,需要提前配置xml文件
-        rabbitTemplate.convertAndSend("info",loginReq);
+//        rabbitTemplate.convertAndSend("info",loginReq);
         System.out.println("----------end-----------");
     }
 }

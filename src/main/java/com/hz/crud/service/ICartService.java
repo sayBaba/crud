@@ -1,5 +1,6 @@
 package com.hz.crud.service;
 
+import com.hz.crud.resp.CartResp;
 import com.hz.crud.vo.CartDto;
 
 import java.util.List;
@@ -9,21 +10,23 @@ import java.util.List;
  */
 public interface ICartService {
 
-    /**
-     * 加入购物车
-     * @param userId
-     * @param productId
-     * @param num
-     * @return
-     */
-    int addCart(String userId,String productId,int num);
 
     /**
-     * 购物车列表
-     * @param userId
+     * 加载购物车列表
+     * @param userId 用户id
      * @return
      */
     List<CartDto> getCartList(String userId);
+
+
+    /**
+     * 加入购物车
+     * @param userId
+     * @param goodsId
+     * @param num
+     * @return
+     */
+    CartResp addCart(String userId, String goodsId, int num);
 
     /**
      * 修改数量

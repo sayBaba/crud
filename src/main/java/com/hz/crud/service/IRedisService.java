@@ -1,4 +1,7 @@
 package com.hz.crud.service;
+
+import java.util.Set;
+
 /**
  * redis公共服务
  */
@@ -19,5 +22,18 @@ public interface IRedisService {
      */
     public String get(String key);
 
+
+    /**
+     * 模糊查询redis的key
+     */
+    public Set<String> hkeys(String pattern);
+
+
+    /**
+     * 单机查询redis
+     * @param pattern
+     * @return
+     */
+    public Set<String> getKeysFromLocal(String pattern);
 
 }

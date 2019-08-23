@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- mapper:根标签，namespace：命名空间，随便写，一般保证命名空间唯一 -->
+<mapper namespace="com.hz.crud.dao.CartMapper">
+
+    <!-- 据商品Id查询到商品信息-->
+    <select id="queryByGoodsId" resultType="com.hz.crud.model.GoodsInfo">
+        SELECT GOODS_ID AS goodsId,GOODS_NAME AS goodsName,GOODS_PRICE AS goodsPrice,
+        GOODS_IMGE AS goodsImge,GOODS_DESC AS goodsDesc,GOODS_NUM AS goodsNum
+        FROM tb_goods
+        WHERE GOODS_ID = #{goodsId}
+    </select>
+
+
+</mapper>
